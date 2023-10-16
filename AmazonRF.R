@@ -36,8 +36,8 @@ rf_workflow <- workflow() %>%
   add_model(my_mod)
 
 ## Set up grid of tuning values
-tuning_grid <- grid_regular(penalty(),
-                            mixture(),
+tuning_grid <- grid_regular(mtry(1:4),
+                            min_n(),
                             levels = 10) ## L^2 total tuning possibilities
 
 ## Set up K-fold CV
@@ -53,7 +53,7 @@ CV_results <- rf_workflow %>%
 ## Find best tuning parameters
 collect_metrics(CV_results) %>% # Gathers metrics into DF
   filter(.metric=="roc_auc") %>%
-  ggplot(data=., aes(x=penalty, y=mean, color=factor(mixture))) +
+  ggplot(data=., aes(x=mtry, y=min_n, color=factor(mtry))) +
   geom_line()
 
 collect_metrics(CV_results)
