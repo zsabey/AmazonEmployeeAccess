@@ -44,7 +44,7 @@ Type 'q()' to quit R.
 ✖ dplyr::lag()      masks stats::lag()
 ✖ yardstick::spec() masks readr::spec()
 ✖ recipes::step()   masks stats::step()
-• Learn how to get started at https://www.tidymodels.org/start/
+• Search for functions across packages at https://www.tidymodels.org/find/
 > library(embed)
 > 
 > trainCsv <- read_csv("train.csv")
@@ -118,10 +118,20 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 > folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 > 
 > ## Run the CV
-> CV_results <- penalized_workflow %>%
+> CV_results <- rf_workflow %>%
 +   tune_grid(resamples=folds,
 +             grid=tuning_grid,
 +             metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
 +                                precision, accuracy)) #Or leave metrics NULL
-Error: object 'penalized_workflow' not found
+i Creating pre-processing data to finalize unknown parameter: mtry
+Error in `check_grid()`:
+! The provided `grid` has the following parameter columns that have not been marked for tuning by `tune()`: 'penalty', 'mixture'.
+Backtrace:
+    ▆
+ 1. ├─rf_workflow %>% ...
+ 2. ├─tune::tune_grid(...)
+ 3. └─tune:::tune_grid.workflow(...)
+ 4.   └─tune:::tune_grid_workflow(...)
+ 5.     └─tune:::check_grid(grid = grid, workflow = workflow, pset = pset)
+ 6.       └─rlang::abort(msg)
 Execution halted
