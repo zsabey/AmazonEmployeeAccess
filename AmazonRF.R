@@ -44,7 +44,7 @@ tuning_grid <- grid_regular(penalty(),
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 
 ## Run the CV
-CV_results <- penalized_workflow %>%
+CV_results <- rf_workflow %>%
   tune_grid(resamples=folds,
             grid=tuning_grid,
             metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
