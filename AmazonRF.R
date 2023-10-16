@@ -36,7 +36,7 @@ rf_workflow <- workflow() %>%
   add_model(my_mod)
 
 ## Set up grid of tuning values
-tuning_grid <- grid_regular(mtry(1:4),
+tuning_grid <- grid_regular(mtry(range = c(1,4)),
                             min_n(),
                             levels = 10) ## L^2 total tuning possibilities
 
