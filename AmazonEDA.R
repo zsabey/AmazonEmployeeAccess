@@ -3,6 +3,12 @@ library(tidyverse)
 library(tidymodels)
 library(mosaic)
 library(embed)
+library(doParallel)
+
+parallel::detectCores()
+cl <- makePSOCKcluster(num_cores)
+registerDoParallel(cl)
+stopCluster(cl)
 
 trainCsv <- read_csv("train.csv")
 
