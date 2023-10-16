@@ -43,6 +43,12 @@ tuning_grid <- grid_regular(penalty(),
 ## Set up K-fold CV
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 
+## Run the CV
+CV_results <- penalized_workflow %>%
+  tune_grid(resamples=folds,
+            grid=tuning_grid,
+            metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
+                               precision, accuracy)) #Or leave metrics NULL
 
 ## Find best tuning parameters
 collect_metrics(CV_results) %>% # Gathers metrics into DF
@@ -73,6 +79,6 @@ Sub3 <- rf_predictions %>%
   rename(Id= id, Action = .pred_1)
 
 
-write_csv(rf, "LogRegSubmission.csv")
+write_csv(Sub3, "RFSubmission.csv")
 
 
