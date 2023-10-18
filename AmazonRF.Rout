@@ -110,16 +110,90 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 +   add_model(my_mod)
 > 
 > ## Set up grid of tuning values
-> tuning_grid <- grid_regular(mtry(1:4),
+> tuning_grid <- grid_regular(mtry(range = c(1,4)),
 +                             min_n(),
 +                             levels = 10) ## L^2 total tuning possibilities
-Error in `mtry()`:
-! `range` must have two values: an upper and lower bound. `Inf` and `unknown()` are acceptable values.
-Backtrace:
-    ▆
- 1. ├─dials::grid_regular(mtry(1:4), min_n(), levels = 10)
- 2. └─dials::mtry(1:4)
- 3.   └─dials::new_quant_param(...)
- 4.     └─dials::range_validate(res, range, call = call)
- 5.       └─rlang::abort(...)
-Execution halted
+> 
+> ## Set up K-fold CV
+> folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> 
+> ## Run the CV
+> CV_results <- rf_workflow %>%
++   tune_grid(resamples=folds,
++             grid=tuning_grid,
++             metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
++                                precision, accuracy)) #Or leave metrics NULL
+→ A | warning: Model failed to converge with max|grad| = 0.176274 (tol = 0.002, component 1), Model is nearly unidentifiable: very large eigenvalue
+                - Rescale variables?
+There were issues with some computations   A: x1
+There were issues with some computations   A: x1
+
+> 
+> ## Find best tuning parameters
+> collect_metrics(CV_results) %>% # Gathers metrics into DF
++   filter(.metric=="roc_auc") %>%
++   ggplot(data=., aes(x=mtry, y=min_n, color=factor(mtry))) +
++   geom_line()
+> 
+> collect_metrics(CV_results)
+# A tibble: 280 × 8
+    mtry min_n .metric   .estimator   mean     n  std_err .config              
+   <int> <int> <chr>     <chr>       <dbl> <int>    <dbl> <chr>                
+ 1     1     2 accuracy  binary     0.945      3 0.00198  Preprocessor1_Model01
+ 2     1     2 f_meas    binary     0.167      3 0.0111   Preprocessor1_Model01
+ 3     1     2 precision binary     0.696      3 0.0506   Preprocessor1_Model01
+ 4     1     2 recall    binary     0.0954     3 0.00770  Preprocessor1_Model01
+ 5     1     2 roc_auc   binary     0.850      3 0.00381  Preprocessor1_Model01
+ 6     1     2 sens      binary     0.0954     3 0.00770  Preprocessor1_Model01
+ 7     1     2 spec      binary     0.997      3 0.000669 Preprocessor1_Model01
+ 8     2     2 accuracy  binary     0.949      3 0.00143  Preprocessor1_Model02
+ 9     2     2 f_meas    binary     0.384      3 0.00979  Preprocessor1_Model02
+10     2     2 precision binary     0.634      3 0.0257   Preprocessor1_Model02
+# ℹ 270 more rows
+> 
+> CV_results
+# Tuning results
+# 3-fold cross-validation 
+# A tibble: 3 × 4
+  splits                id    .metrics           .notes          
+  <list>                <chr> <list>             <list>          
+1 <split [21846/10923]> Fold1 <tibble [280 × 6]> <tibble [1 × 3]>
+2 <split [21846/10923]> Fold2 <tibble [280 × 6]> <tibble [0 × 3]>
+3 <split [21846/10923]> Fold3 <tibble [280 × 6]> <tibble [0 × 3]>
+
+There were issues with some computations:
+
+  - Warning(s) x1: Model failed to converge with max|grad| = 0.176274 (tol = 0.002, ...
+
+Run `show_notes(.Last.tune.result)` for more information.
+> ## Find Best Tuning Parameters
+> bestTune <- CV_results %>%
++   select_best("roc_auc")
+> bestTune
+# A tibble: 1 × 3
+   mtry min_n .config              
+  <int> <int> <chr>                
+1     2     2 Preprocessor1_Model02
+> 
+> ## Finalize the Workflow & fit it
+> final_wf <- rf_workflow %>%
++   finalize_workflow(bestTune) %>%
++   fit(data=trainCsv)
+> 
+> rf_predictions <- final_wf %>%
++   predict(new_data = testCsv,
++           type = "prob")
+> 
+> Sub3 <- rf_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> 
+> write_csv(Sub3, "RFSubmission.csv")
+> 
+> 
+> 
+> proc.time()
+    user   system  elapsed 
+1613.915   33.943  873.541 
