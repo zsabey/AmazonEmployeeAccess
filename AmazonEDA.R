@@ -6,7 +6,7 @@ library(embed)
 library(doParallel)
 
 parallel::detectCores()
-cl <- makePSOCKcluster(num_cores)
+cl <- makePSOCKcluster(5)
 registerDoParallel(cl)
 stopCluster(cl)
 
