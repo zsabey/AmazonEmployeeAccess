@@ -5,6 +5,8 @@ library(embed)
 library(discrim)
 library(kernlab)
 
+cl <- makePSOCKcluster(10)
+registerDoParallel(cl)
 
 
 trainCsv <- read_csv("train.csv")
@@ -85,4 +87,4 @@ Sub4 <- SVM_predictions %>%
 
 write_csv(Sub4, "SVMSubmission.csv")
 
-
+stopCluster(cl)
