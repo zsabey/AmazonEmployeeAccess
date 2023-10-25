@@ -6,7 +6,7 @@ library(discrim)
 library(kernlab)
 library(doParallel)
 
-cl <- makePSOCKcluster(10)
+cl <- makePSOCKcluster(5)
 registerDoParallel(cl)
 
 
@@ -31,7 +31,7 @@ baked
 
 
 ## SVM model
-svmRadial <- svm_rbf(rbf_sigma=tune(), cost=tune()) %>% # set or tune
+SVM_model <- svm_rbf(rbf_sigma=tune(), cost=tune()) %>% # set or tune
   set_mode("classification") %>%
   set_engine("kernlab")
 
@@ -86,7 +86,6 @@ Sub4 <- SVM_predictions %>%
   rename(Id= id, Action = .pred_1)
 
 
-write_csv(Sub4, "SVMSubmq
-          ission.csv")
+write_csv(Sub4, "SVMSubmission.csv")
 
 stopCluster(cl)
