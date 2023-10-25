@@ -16,7 +16,8 @@ trainCsv <- trainCsv %>%
 nb_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
   #step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
-  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION))
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
+  step_pca(all_predictors(),threshold = .95) #pca addition
 
 prep <- prep(nb_recipe)
 baked <- bake(prep, new_data = NULL)
@@ -34,6 +35,7 @@ add_model(nb_model)
 
 ## Tune smoothness and Laplace here
 
+
 ## Set up grid of tuning values
 tuning_grid <- grid_regular(Laplace(),
                             smoothness(),
@@ -43,6 +45,7 @@ tuning_grid <- grid_regular(Laplace(),
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 
 ## Run the CV
+## smoothness 1.5, Laplace 0
 CV_results <- nb_wf %>%
   tune_grid(resamples=folds,
             grid=tuning_grid,

@@ -15,7 +15,8 @@ trainCsv <- trainCsv %>%
 knn_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
   step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
-  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION))
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
+  step_pca(all_predictors(),threshold = .9) #pca addition
 
 prep <- prep(knn_recipe)
 baked <- bake(prep, new_data = NULL)
