@@ -4,6 +4,7 @@ library(tidymodels)
 library(embed)
 library(discrim)
 library(kernlab)
+library(doParallel)
 
 cl <- makePSOCKcluster(10)
 registerDoParallel(cl)
@@ -85,6 +86,7 @@ Sub4 <- SVM_predictions %>%
   rename(Id= id, Action = .pred_1)
 
 
-write_csv(Sub4, "SVMSubmission.csv")
+write_csv(Sub4, "SVMSubmq
+          ission.csv")
 
 stopCluster(cl)
