@@ -2,6 +2,7 @@
 library(tidyverse)
 library(tidymodels)
 library(embed)
+library(themis)
 
 trainCsv <- read_csv("train.csv")
 
@@ -14,8 +15,9 @@ trainCsv <- trainCsv %>%
 
 rf_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
-  step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
-  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION))
+  #step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
+  step_smote(all_outcomes(), neighbors=5)
 
 prep <- prep(rf_recipe)
 baked <- bake(prep, new_data = NULL)

@@ -4,6 +4,7 @@ library(tidymodels)
 library(embed)
 library(discrim)
 
+#Read in dataset
 trainCsv <- read_csv("train.csv")
 
 testCsv <- read_csv("test.csv")
@@ -79,6 +80,7 @@ Sub4 <- nb_predictions %>%
   select(id,.pred_1) %>%
   rename(Id= id, Action = .pred_1)
 
+#Write it to a csv
 
 write_csv(Sub4, "nbSubmission.csv")
 
