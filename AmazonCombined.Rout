@@ -1,0 +1,357 @@
+
+R version 4.3.1 (2023-06-16) -- "Beagle Scouts"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ##Libraries
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.3     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(tidymodels)
+── Attaching packages ────────────────────────────────────── tidymodels 1.1.1 ──
+✔ broom        1.0.5     ✔ rsample      1.2.0
+✔ dials        1.2.0     ✔ tune         1.1.2
+✔ infer        1.0.5     ✔ workflows    1.1.3
+✔ modeldata    1.2.0     ✔ workflowsets 1.0.1
+✔ parsnip      1.1.1     ✔ yardstick    1.2.0
+✔ recipes      1.0.8     
+── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
+✖ scales::discard() masks purrr::discard()
+✖ dplyr::filter()   masks stats::filter()
+✖ recipes::fixed()  masks stringr::fixed()
+✖ dplyr::lag()      masks stats::lag()
+✖ yardstick::spec() masks readr::spec()
+✖ recipes::step()   masks stats::step()
+• Learn how to get started at https://www.tidymodels.org/start/
+> library(embed)
+> library(discrim)
+
+Attaching package: ‘discrim’
+
+The following object is masked from ‘package:dials’:
+
+    smoothness
+
+> library(kernlab)
+
+Attaching package: ‘kernlab’
+
+The following object is masked from ‘package:scales’:
+
+    alpha
+
+The following object is masked from ‘package:purrr’:
+
+    cross
+
+The following object is masked from ‘package:ggplot2’:
+
+    alpha
+
+> library(themis)
+> 
+> 
+> trainCsv <- read_csv("train.csv")
+Rows: 32769 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): ACTION, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTN...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> testCsv <- read_csv("test.csv")
+Rows: 58921 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> trainCsv <- trainCsv %>%
++   mutate(ACTION = as.factor(ACTION))
+> 
+> ##Recipe
+> my_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
++   ###step_other(all_nominal_predictors(), threshold = .001) %>%
++   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
++   step_smote(all_outcomes(),neighbors=5)# combines categorical values that occur <5% into an "other" value
+> #step_dummy(all_nominal_predictors())
+> 
+> 
+> penReg_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
++   ##step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
++   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
++   step_smote(all_outcomes(),neighbors=5)
+> #%>% # dummy variable encoding
+> # step_lencode_mixed(all_nominal_predictors(), outcome = vars(target_var)) #target encoding
+> # also step_lencode_glm() and step_lencode_bayes()
+> 
+> 
+> # NOTE: some of these step functions are not appropriate to use together
+> 
+> # apply the recipe to your data
+> prep <- prep(my_recipe)
+> baked <- bake(prep, new_data = NULL)
+> baked
+# A tibble: 61,744 × 10
+   RESOURCE MGR_ID ROLE_ROLLUP_1 ROLE_ROLLUP_2 ROLE_DEPTNAME ROLE_TITLE
+      <dbl>  <dbl>         <dbl>         <dbl>         <dbl>      <dbl>
+ 1    -3.65 -6.28          -2.93         -3.08         -3.16      -3.40
+ 2    -3.40 -5.62          -2.93         -3.44         -2.17      -3.29
+ 3    -3.60 -5.40          -2.48         -2.47         -2.50      -2.09
+ 4    -3.54 -6.34          -2.93         -3.44         -4.27      -2.45
+ 5    -3.85 -5.59          -2.63         -2.05         -1.29      -2.00
+ 6    -2.28 -0.949         -2.71         -2.68         -2.12      -2.52
+ 7    -3.03 -5.84          -2.93         -3.44         -3.98      -2.58
+ 8    -4.10 -5.51          -2.93         -2.56         -3.26      -2.69
+ 9    -3.70 -6.00          -2.93         -3.29         -3.07      -2.37
+10    -4.00 -5.32          -1.52         -1.51         -2.71      -2.09
+# ℹ 61,734 more rows
+# ℹ 4 more variables: ROLE_FAMILY_DESC <dbl>, ROLE_FAMILY <dbl>,
+#   ROLE_CODE <dbl>, ACTION <fct>
+> 
+> ##Logistic Regression workflow
+> my_mod <- logistic_reg() %>% #Type of model
++   set_engine("glm")
+> 
+> 
+> logReg_workflow <- workflow() %>%
++   add_recipe(my_recipe) %>%
++   add_model(my_mod) %>%
++   fit(data = trainCsv) # Fit the workflow
+> 
+> logReg_predictions <- predict(logReg_workflow,
++                               new_data=testCsv,
++                               type="prob") # "class" or "prob" (see doc)
+> 
+> 
+> ##Penalized Logistic Regression
+> my_mod <- logistic_reg(mixture=tune(), penalty=tune()) %>% #Type of model
++   set_engine("glmnet")
+> 
+> penalized_workflow <- workflow() %>%
++   add_recipe(penReg_recipe) %>%
++   add_model(my_mod)
+> 
+> ## Grid of values to tune over
+> tuning_grid <- grid_regular(penalty(),
++                             mixture(),
++                             levels = 10) ## L^2 total tuning possibilities
+> tuning_grid
+# A tibble: 100 × 2
+         penalty mixture
+           <dbl>   <dbl>
+ 1 0.0000000001        0
+ 2 0.00000000129       0
+ 3 0.0000000167        0
+ 4 0.000000215         0
+ 5 0.00000278          0
+ 6 0.0000359           0
+ 7 0.000464            0
+ 8 0.00599             0
+ 9 0.0774              0
+10 1                   0
+# ℹ 90 more rows
+> 
+> ## Split data for CV
+> folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> 
+> ## Run the CV
+> CV_results <- penalized_workflow %>%
++   tune_grid(resamples=folds,
++             grid=tuning_grid,
++             metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
++                                precision, accuracy)) #Or leave metrics NULL
+→ A | warning: While computing binary `precision()`, no predicted events were detected (i.e. `true_positive + false_positive = 0`). 
+               Precision is undefined in this case, and `NA` will be returned.
+               Note that 635 true event(s) actually occured for the problematic event level, '0'.
+There were issues with some computations   A: x1
+→ B | warning: While computing binary `precision()`, no predicted events were detected (i.e. `true_positive + false_positive = 0`). 
+               Precision is undefined in this case, and `NA` will be returned.
+               Note that 630 true event(s) actually occured for the problematic event level, '0'.
+There were issues with some computations   A: x1There were issues with some computations   A: x1   B: x1
+There were issues with some computations   A: x1   B: x1
+
+> 
+> ## Plot Results (example)
+> collect_metrics(CV_results) %>% # Gathers metrics into DF
++   filter(.metric=="roc_auc") %>%
++   ggplot(data=., aes(x=penalty, y=mean, color=factor(mixture))) +
++   geom_line()
+> 
+> collect_metrics(CV_results)
+# A tibble: 700 × 8
+         penalty mixture .metric   .estimator  mean     n std_err .config       
+           <dbl>   <dbl> <chr>     <chr>      <dbl> <int>   <dbl> <chr>         
+ 1 0.0000000001        0 accuracy  binary     0.904     3 0.00284 Preprocessor1…
+ 2 0.0000000001        0 f_meas    binary     0.370     3 0.0191  Preprocessor1…
+ 3 0.0000000001        0 precision binary     0.299     3 0.00567 Preprocessor1…
+ 4 0.0000000001        0 recall    binary     0.489     3 0.0524  Preprocessor1…
+ 5 0.0000000001        0 roc_auc   binary     0.829     3 0.0147  Preprocessor1…
+ 6 0.0000000001        0 sens      binary     0.489     3 0.0524  Preprocessor1…
+ 7 0.0000000001        0 spec      binary     0.930     3 0.00607 Preprocessor1…
+ 8 0.00000000129       0 accuracy  binary     0.904     3 0.00284 Preprocessor1…
+ 9 0.00000000129       0 f_meas    binary     0.370     3 0.0191  Preprocessor1…
+10 0.00000000129       0 precision binary     0.299     3 0.00567 Preprocessor1…
+# ℹ 690 more rows
+> 
+> CV_results
+# Tuning results
+# 3-fold cross-validation 
+# A tibble: 3 × 4
+  splits                id    .metrics           .notes          
+  <list>                <chr> <list>             <list>          
+1 <split [21846/10923]> Fold1 <tibble [700 × 6]> <tibble [1 × 3]>
+2 <split [21846/10923]> Fold2 <tibble [700 × 6]> <tibble [1 × 3]>
+3 <split [21846/10923]> Fold3 <tibble [700 × 6]> <tibble [0 × 3]>
+
+There were issues with some computations:
+
+  - Warning(s) x1: While computing binary `precision()`, no predicted events were de...
+  - Warning(s) x1: While computing binary `precision()`, no predicted events were de...
+
+Run `show_notes(.Last.tune.result)` for more information.
+> ## Find Best Tuning Parameters
+> bestTune <- CV_results %>%
++   select_best("roc_auc")
+> bestTune
+# A tibble: 1 × 3
+  penalty mixture .config               
+    <dbl>   <dbl> <chr>                 
+1       1   0.111 Preprocessor1_Model020
+> 
+> ## Finalize the Workflow & fit it
+> final_wf <- penalized_workflow %>%
++   finalize_workflow(bestTune) %>%
++   fit(data=trainCsv)
+> 
+> penalized_predictions <- final_wf %>%
++   predict(new_data = testCsv,
++           type = "prob")
+> 
+> 
+> ##Prep for submission
+> 
+> Sub1 <- logReg_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> 
+> Sub2 <- penalized_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> 
+> write_csv(Sub1, "LogRegSubmission.csv")
+> 
+> write_csv(Sub2, "PenRegSubmission.csv")
+> 
+> 
+> 
+> ##SVM
+> 
+> trainCsv <- read_csv("train.csv")
+Rows: 32769 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): ACTION, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTN...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> testCsv <- read_csv("test.csv")
+Rows: 58921 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> trainCsv <- trainCsv %>%
++   mutate(ACTION = as.factor(ACTION))
+> 
+> #Create the recipe and bake it
+> 
+> SVM_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
++   ###step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
++   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
++   step_smote(all_outcomes(),neighbors=5) #%>%
+> #step_pca(all_predictors(),threshold = .95) #pca addition
+> 
+> prep <- prep(SVM_recipe)
+> baked <- bake(prep, new_data = NULL)
+> baked
+# A tibble: 61,744 × 10
+   RESOURCE MGR_ID ROLE_ROLLUP_1 ROLE_ROLLUP_2 ROLE_DEPTNAME ROLE_TITLE
+      <dbl>  <dbl>         <dbl>         <dbl>         <dbl>      <dbl>
+ 1    -3.65 -6.28          -2.93         -3.08         -3.16      -3.40
+ 2    -3.40 -5.62          -2.93         -3.44         -2.17      -3.29
+ 3    -3.60 -5.40          -2.48         -2.47         -2.50      -2.09
+ 4    -3.54 -6.34          -2.93         -3.44         -4.27      -2.45
+ 5    -3.85 -5.59          -2.63         -2.05         -1.29      -2.00
+ 6    -2.28 -0.949         -2.71         -2.68         -2.12      -2.52
+ 7    -3.03 -5.84          -2.93         -3.44         -3.98      -2.58
+ 8    -4.10 -5.51          -2.93         -2.56         -3.26      -2.69
+ 9    -3.70 -6.00          -2.93         -3.29         -3.07      -2.37
+10    -4.00 -5.32          -1.52         -1.51         -2.71      -2.09
+# ℹ 61,734 more rows
+# ℹ 4 more variables: ROLE_FAMILY_DESC <dbl>, ROLE_FAMILY <dbl>,
+#   ROLE_CODE <dbl>, ACTION <fct>
+> 
+> 
+> ## SVM model
+> SVM_model <- svm_rbf(rbf_sigma=tune(), cost=tune()) %>% # set or tune
++   set_mode("classification") %>%
++   set_engine("kernlab")
+> 
+> SVM_wf <- workflow() %>%
++   add_recipe(SVM_recipe) %>%
++   add_model(SVM_model)
+> 
+> ## Tune smoothness and Laplace here
+> 
+> 
+> ## Set up grid of tuning values
+> tuning_grid <- grid_regular(rbf_sigma(),
++                             cost(),
++                             levels = 5) ## L^2 total tuning possibilities
+> 
+> ## Set up K-fold CV
+> folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> 
+> ## Run the CV
+> ## smoothness 1.5, Laplace 0
+> CV_results <- SVM_wf %>%
++   tune_grid(resamples=folds,
++             grid=tuning_grid,
++             metrics=metric_set(roc_auc)) #Or leave metrics NULL
