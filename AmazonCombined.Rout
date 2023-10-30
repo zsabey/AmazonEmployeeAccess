@@ -44,7 +44,7 @@ Type 'q()' to quit R.
 ✖ dplyr::lag()      masks stats::lag()
 ✖ yardstick::spec() masks readr::spec()
 ✖ recipes::step()   masks stats::step()
-• Dig deeper into tidy modeling with R at https://www.tmwr.org
+• Search for functions across packages at https://www.tidymodels.org/find/
 > library(embed)
 > library(discrim)
 
@@ -100,7 +100,7 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 +   ###step_other(all_nominal_predictors(), threshold = .001) %>%
 +   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
 +   step_smote(all_outcomes(),neighbors=5)# combines categorical values that occur <5% into an "other" value
-> #step_dummy(all_nominal_predictors())
+>   #step_dummy(all_nominal_predictors())
 > 
 > 
 > penReg_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
@@ -116,25 +116,9 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 > # NOTE: some of these step functions are not appropriate to use together
 > 
 > # apply the recipe to your data
-> prep <- prep(my_recipe)
-> baked <- bake(prep, new_data = NULL)
-> baked
-# A tibble: 61,744 × 10
-   RESOURCE MGR_ID ROLE_ROLLUP_1 ROLE_ROLLUP_2 ROLE_DEPTNAME ROLE_TITLE
-      <dbl>  <dbl>         <dbl>         <dbl>         <dbl>      <dbl>
- 1    -3.65 -6.28          -2.93         -3.08         -3.16      -3.40
- 2    -3.40 -5.62          -2.93         -3.44         -2.17      -3.29
- 3    -3.60 -5.40          -2.48         -2.47         -2.50      -2.09
- 4    -3.54 -6.34          -2.93         -3.44         -4.27      -2.45
- 5    -3.85 -5.59          -2.63         -2.05         -1.29      -2.00
- 6    -2.28 -0.949         -2.71         -2.68         -2.12      -2.52
- 7    -3.03 -5.84          -2.93         -3.44         -3.98      -2.58
- 8    -4.10 -5.51          -2.93         -2.56         -3.26      -2.69
- 9    -3.70 -6.00          -2.93         -3.29         -3.07      -2.37
-10    -4.00 -5.32          -1.52         -1.51         -2.71      -2.09
-# ℹ 61,734 more rows
-# ℹ 4 more variables: ROLE_FAMILY_DESC <dbl>, ROLE_FAMILY <dbl>,
-#   ROLE_CODE <dbl>, ACTION <fct>
+> # prep <- prep(my_recipe)
+> # baked <- bake(prep, new_data = NULL)
+> # baked
 > 
 > ##Logistic Regression workflow
 > my_mod <- logistic_reg() %>% #Type of model
@@ -192,10 +176,7 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
                Precision is undefined in this case, and `NA` will be returned.
                Note that 613 true event(s) actually occured for the problematic event level, '0'.
 There were issues with some computations   A: x1
-→ B | warning: Model failed to converge with max|grad| = 0.335824 (tol = 0.002, component 1), Model is nearly unidentifiable: very large eigenvalue
-                - Rescale variables?
-There were issues with some computations   A: x1There were issues with some computations   A: x1   B: x1
-There were issues with some computations   A: x1   B: x1
+There were issues with some computations   A: x1
 
 > 
 > ## Plot Results (example)
@@ -208,16 +189,16 @@ There were issues with some computations   A: x1   B: x1
 # A tibble: 700 × 8
          penalty mixture .metric   .estimator  mean     n std_err .config       
            <dbl>   <dbl> <chr>     <chr>      <dbl> <int>   <dbl> <chr>         
- 1 0.0000000001        0 accuracy  binary     0.904     3 0.00110 Preprocessor1…
- 2 0.0000000001        0 f_meas    binary     0.362     3 0.0175  Preprocessor1…
- 3 0.0000000001        0 precision binary     0.293     3 0.00927 Preprocessor1…
- 4 0.0000000001        0 recall    binary     0.474     3 0.0362  Preprocessor1…
- 5 0.0000000001        0 roc_auc   binary     0.816     3 0.0111  Preprocessor1…
- 6 0.0000000001        0 sens      binary     0.474     3 0.0362  Preprocessor1…
- 7 0.0000000001        0 spec      binary     0.930     3 0.00265 Preprocessor1…
- 8 0.00000000129       0 accuracy  binary     0.904     3 0.00110 Preprocessor1…
- 9 0.00000000129       0 f_meas    binary     0.362     3 0.0175  Preprocessor1…
-10 0.00000000129       0 precision binary     0.293     3 0.00927 Preprocessor1…
+ 1 0.0000000001        0 accuracy  binary     0.908     3 0.00128 Preprocessor1…
+ 2 0.0000000001        0 f_meas    binary     0.393     3 0.0306  Preprocessor1…
+ 3 0.0000000001        0 precision binary     0.316     3 0.0208  Preprocessor1…
+ 4 0.0000000001        0 recall    binary     0.521     3 0.0514  Preprocessor1…
+ 5 0.0000000001        0 roc_auc   binary     0.834     3 0.00770 Preprocessor1…
+ 6 0.0000000001        0 sens      binary     0.521     3 0.0514  Preprocessor1…
+ 7 0.0000000001        0 spec      binary     0.931     3 0.00356 Preprocessor1…
+ 8 0.00000000129       0 accuracy  binary     0.908     3 0.00128 Preprocessor1…
+ 9 0.00000000129       0 f_meas    binary     0.393     3 0.0306  Preprocessor1…
+10 0.00000000129       0 precision binary     0.316     3 0.0208  Preprocessor1…
 # ℹ 690 more rows
 > 
 > CV_results
@@ -227,12 +208,11 @@ There were issues with some computations   A: x1   B: x1
   splits                id    .metrics           .notes          
   <list>                <chr> <list>             <list>          
 1 <split [21846/10923]> Fold1 <tibble [700 × 6]> <tibble [0 × 3]>
-2 <split [21846/10923]> Fold2 <tibble [700 × 6]> <tibble [1 × 3]>
+2 <split [21846/10923]> Fold2 <tibble [700 × 6]> <tibble [0 × 3]>
 3 <split [21846/10923]> Fold3 <tibble [700 × 6]> <tibble [1 × 3]>
 
 There were issues with some computations:
 
-  - Warning(s) x1: Model failed to converge with max|grad| = 0.335824 (tol = 0.002, ...
   - Warning(s) x1: While computing binary `precision()`, no predicted events were de...
 
 Run `show_notes(.Last.tune.result)` for more information.
@@ -243,7 +223,7 @@ Run `show_notes(.Last.tune.result)` for more information.
 # A tibble: 1 × 3
   penalty mixture .config               
     <dbl>   <dbl> <chr>                 
-1       1       0 Preprocessor1_Model010
+1       1   0.111 Preprocessor1_Model020
 > 
 > ## Finalize the Workflow & fit it
 > final_wf <- penalized_workflow %>%
@@ -275,7 +255,89 @@ Run `show_notes(.Last.tune.result)` for more information.
 > 
 > 
 > 
-> ##SVM
+> # ##SVM
+> # 
+> # trainCsv <- read_csv("train.csv")
+> # 
+> # testCsv <- read_csv("test.csv")
+> # 
+> # trainCsv <- trainCsv %>%
+> #   mutate(ACTION = as.factor(ACTION))
+> # 
+> # #Create the recipe and bake it
+> # 
+> # SVM_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
+> #   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
+> #   ###step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
+> #   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
+> #   step_smote(all_outcomes(),neighbors=5) #%>%
+> # #step_pca(all_predictors(),threshold = .95) #pca addition
+> # 
+> # prep <- prep(SVM_recipe)
+> # baked <- bake(prep, new_data = NULL)
+> # baked
+> # 
+> # 
+> # ## SVM model
+> # SVM_model <- svm_rbf(rbf_sigma=tune(), cost=tune()) %>% # set or tune
+> #   set_mode("classification") %>%
+> #   set_engine("kernlab")
+> # 
+> # SVM_wf <- workflow() %>%
+> #   add_recipe(SVM_recipe) %>%
+> #   add_model(SVM_model)
+> # 
+> # ## Tune smoothness and Laplace here
+> # 
+> # 
+> # ## Set up grid of tuning values
+> # tuning_grid <- grid_regular(rbf_sigma(),
+> #                             cost(),
+> #                             levels = 3) ## L^2 total tuning possibilities
+> # 
+> # ## Set up K-fold CV
+> # folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> # 
+> # ## Run the CV
+> # ## smoothness 1.5, Laplace 0
+> # CV_results <- SVM_wf %>%
+> #   tune_grid(resamples=folds,
+> #             grid=tuning_grid,
+> #             metrics=metric_set(roc_auc)) #Or leave metrics NULL
+> # 
+> # ## Find best tuning parameters
+> # collect_metrics(CV_results) %>% # Gathers metrics into DF
+> #   filter(.metric=="roc_auc") %>%
+> #   ggplot(data=., aes(x=rbf_sigma, y=mean, color=factor(cost))) +
+> #   geom_line()
+> # 
+> # collect_metrics(CV_results)
+> # 
+> # 
+> # ## Find Best Tuning Parameters
+> # bestTune <- CV_results %>%
+> #   select_best("roc_auc")
+> # bestTune
+> # 
+> # ## Finalize the Workflow & fit it
+> # final_wf <- SVM_wf %>%
+> #   finalize_workflow(bestTune) %>%
+> #   fit(data=trainCsv)
+> # 
+> # SVM_predictions <- final_wf %>%
+> #   predict(new_data = testCsv,
+> #           type = "prob")
+> # 
+> # Sub4 <- SVM_predictions %>% 
+> #   bind_cols(testCsv) %>% 
+> #   select(id,.pred_1) %>%
+> #   rename(Id= id, Action = .pred_1)
+> # 
+> # 
+> # write_csv(Sub4, "SVMSubmission.csv")
+> 
+> ##RF
+> 
 > 
 > trainCsv <- read_csv("train.csv")
 Rows: 32769 Columns: 10
@@ -300,59 +362,288 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 > 
 > #Create the recipe and bake it
 > 
-> SVM_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
+> rf_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
 +   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
 +   ###step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
 +   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
-+   step_smote(all_outcomes(),neighbors=5) #%>%
-> #step_pca(all_predictors(),threshold = .95) #pca addition
++   step_smote(all_outcomes(), neighbors=5)
 > 
-> prep <- prep(SVM_recipe)
-> baked <- bake(prep, new_data = NULL)
-> baked
-# A tibble: 61,744 × 10
-   RESOURCE MGR_ID ROLE_ROLLUP_1 ROLE_ROLLUP_2 ROLE_DEPTNAME ROLE_TITLE
-      <dbl>  <dbl>         <dbl>         <dbl>         <dbl>      <dbl>
- 1    -3.65 -6.28          -2.93         -3.08         -3.16      -3.40
- 2    -3.40 -5.62          -2.93         -3.44         -2.17      -3.29
- 3    -3.60 -5.40          -2.48         -2.47         -2.50      -2.09
- 4    -3.54 -6.34          -2.93         -3.44         -4.27      -2.45
- 5    -3.85 -5.59          -2.63         -2.05         -1.29      -2.00
- 6    -2.28 -0.949         -2.71         -2.68         -2.12      -2.52
- 7    -3.03 -5.84          -2.93         -3.44         -3.98      -2.58
- 8    -4.10 -5.51          -2.93         -2.56         -3.26      -2.69
- 9    -3.70 -6.00          -2.93         -3.29         -3.07      -2.37
-10    -4.00 -5.32          -1.52         -1.51         -2.71      -2.09
-# ℹ 61,734 more rows
-# ℹ 4 more variables: ROLE_FAMILY_DESC <dbl>, ROLE_FAMILY <dbl>,
-#   ROLE_CODE <dbl>, ACTION <fct>
+> # prep <- prep(rf_recipe)
+> # baked <- bake(prep, new_data = NULL)
+> # baked
 > 
 > 
-> ## SVM model
-> SVM_model <- svm_rbf(rbf_sigma=tune(), cost=tune()) %>% # set or tune
+> 
+> #Set up the model
+> my_mod <- rand_forest(mtry = 1,
++                       min_n=25,
++                       trees=500) %>%
++   set_engine("ranger") %>%
++   set_mode("classification")
+> 
+> ## Create a workflow with model & recipe
+> rf_workflow <- workflow() %>%
++   add_recipe(rf_recipe) %>%
++   add_model(my_mod) %>%
++   fit(data=trainCsv)
+> 
+> ## Set up grid of tuning values
+> # tuning_grid <- grid_regular(mtry(range = c(1,4)),
+> #                             min_n(),
+> #                             levels = 5) ## L^2 total tuning possibilities
+> # 
+> # ## Set up K-fold CV
+> # folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> # 
+> # ## Run the CV
+> # CV_results <- rf_workflow %>%
+> #   tune_grid(resamples=folds,
+> #             grid=tuning_grid,
+> #             metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
+> #                                precision, accuracy)) #Or leave metrics NULL
+> # 
+> # ## Find best tuning parameters
+> # collect_metrics(CV_results) %>% # Gathers metrics into DF
+> #   filter(.metric=="roc_auc") %>%
+> #   ggplot(data=., aes(x=mtry, y=min_n, color=factor(mtry))) +
+> #   geom_line()
+> # 
+> # collect_metrics(CV_results)
+> # 
+> # CV_results
+> # ## Find Best Tuning Parameters
+> # bestTune <- CV_results %>%
+> #   select_best("roc_auc")
+> # bestTune
+> # 
+> # ## Finalize the Workflow & fit it
+> # final_wf <- rf_workflow %>%
+> #   finalize_workflow(bestTune) %>%
+> #   fit(data=trainCsv)
+> 
+> rf_predictions <- rf_workflow %>%
++   predict(new_data = testCsv,
++           type = "prob")
+> 
+> Sub3 <- rf_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> 
+> write_csv(Sub3, "RFSubmission.csv")
+> 
+> 
+> ##Naive Bayes
+> 
+> #Read in dataset
+> trainCsv <- read_csv("train.csv")
+Rows: 32769 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): ACTION, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTN...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> testCsv <- read_csv("test.csv")
+Rows: 58921 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> trainCsv <- trainCsv %>%
++   mutate(ACTION = as.factor(ACTION))
+> 
+> #Create the recipe and bake it
+> 
+> nb_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
++   ###step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
++   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
++   step_pca(all_predictors(),threshold = .95) %>%
++   step_smote(all_outcomes(),neighbors=5)#pca addition
+> 
+> #prep <- prep(nb_recipe)
+> # baked <- bake(prep, new_data = NULL)
+> # baked
+> 
+> 
+> ## nb model
+> nb_model <- naive_Bayes(Laplace=0, smoothness=1.5) %>%
 +   set_mode("classification") %>%
-+   set_engine("kernlab")
++   set_engine("naivebayes") # install discrim library for the naivebayes eng
 > 
-> SVM_wf <- workflow() %>%
-+   add_recipe(SVM_recipe) %>%
-+   add_model(SVM_model)
+> 
+> nb_wf <- workflow() %>%
++   add_recipe(nb_recipe) %>%
++   add_model(nb_model)%>%
++   fit(data=trainCsv)
 > 
 > ## Tune smoothness and Laplace here
 > 
 > 
 > ## Set up grid of tuning values
-> tuning_grid <- grid_regular(rbf_sigma(),
-+                             cost(),
+> # tuning_grid <- grid_regular(Laplace(),
+> #                             smoothness(),
+> #                             levels = 3) ## L^2 total tuning possibilities
+> # 
+> # ## Set up K-fold CV
+> # folds <- vfold_cv(trainCsv, v = 3, repeats=1)
+> # 
+> # ## Run the CV
+> # ## smoothness 1.5, Laplace 0
+> # CV_results <- nb_wf %>%
+> #   tune_grid(resamples=folds,
+> #             grid=tuning_grid,
+> #             metrics=metric_set(roc_auc)) #Or leave metrics NULL
+> # 
+> # ## Find best tuning parameters
+> # collect_metrics(CV_results) %>% # Gathers metrics into DF
+> #   filter(.metric=="roc_auc") %>%
+> #   ggplot(data=., aes(x=Laplace, y=mean, color=factor(smoothness))) +
+> #   geom_line()
+> # 
+> # collect_metrics(CV_results)
+> # 
+> # 
+> # ## Find Best Tuning Parameters
+> # bestTune <- CV_results %>%
+> #   select_best("roc_auc")
+> # bestTune
+> # 
+> # ## Finalize the Workflow & fit it
+> # final_wf <- nb_wf %>%
+> #   finalize_workflow(bestTune) %>%
+> #   fit(data=trainCsv)
+> 
+> nb_predictions <- nb_wf %>%
++   predict(new_data = testCsv,
++           type = "prob")
+> 
+> Sub4 <- nb_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> #Write it to a csv
+> 
+> write_csv(Sub4, "nbSubmission.csv")
+> 
+> ## KNN
+> trainCsv <- read_csv("train.csv")
+Rows: 32769 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): ACTION, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTN...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> testCsv <- read_csv("test.csv")
+Rows: 58921 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> trainCsv <- trainCsv %>%
++   mutate(ACTION = as.factor(ACTION))
+> 
+> #Create the recipe and bake it
+> 
+> knn_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
++   ##step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
++   step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
++   step_pca(all_predictors(),threshold = .9) %>%
++   step_smote(all_outcomes(),neighbors=5) #pca addition
+> 
+> # prep <- prep(knn_recipe)
+> # baked <- bake(prep, new_data = NULL)
+> # baked
+> 
+> 
+> ## knn model
+> knn_model <- nearest_neighbor(neighbors=tune()) %>% # set or tune
++   set_mode("classification") %>%
++   set_engine("kknn")
+> 
+> knn_wf <- workflow() %>%
++   add_recipe(knn_recipe) %>%
++   add_model(knn_model)
+> 
+> ## Fit or Tune Model HERE
+> 
+> 
+> ## Tune smoothness and Laplace here
+> 
+> ## Set up grid of tuning values
+> tuning_grid <- grid_regular(neighbors(),
 +                             levels = 3) ## L^2 total tuning possibilities
+> tuning_grid
+# A tibble: 3 × 1
+  neighbors
+      <int>
+1         1
+2         5
+3        10
 > 
 > ## Set up K-fold CV
 > folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 > 
 > ## Run the CV
-> ## smoothness 1.5, Laplace 0
-> CV_results <- SVM_wf %>%
+> CV_results <-knn_wf %>%
 +   tune_grid(resamples=folds,
 +             grid=tuning_grid,
 +             metrics=metric_set(roc_auc)) #Or leave metrics NULL
-→ A | error:   $ operator is invalid for atomic vectors
-There were issues with some computations   A: x1
+> 
+> ## Find best tuning parameters
+> collect_metrics(CV_results) %>% # Gathers metrics into DF
++   filter(.metric=="roc_auc") %>%
++   ggplot(data=., aes(x=neighbors, y=mean))+ #, color=factor(smoothness))) +
++   geom_line()
+> 
+> collect_metrics(CV_results)
+# A tibble: 3 × 7
+  neighbors .metric .estimator  mean     n std_err .config             
+      <int> <chr>   <chr>      <dbl> <int>   <dbl> <chr>               
+1         1 roc_auc binary     0.679     3  0.0128 Preprocessor1_Model1
+2         5 roc_auc binary     0.755     3  0.0114 Preprocessor1_Model2
+3        10 roc_auc binary     0.771     3  0.0111 Preprocessor1_Model3
+> 
+> 
+> ## Find Best Tuning Parameters
+> bestTune <- CV_results %>%
++   select_best("roc_auc")
+> bestTune
+# A tibble: 1 × 2
+  neighbors .config             
+      <int> <chr>               
+1        10 Preprocessor1_Model3
+> 
+> ## Finalize the Workflow & fit it
+> final_wf <- knn_wf %>%
++   finalize_workflow(bestTune) %>%
++   fit(data=trainCsv)
+> 
+> knn_predictions <- final_wf %>%
++   predict(new_data = testCsv,
++           type = "prob")
+> 
+> Sub5 <- knn_predictions %>% 
++   bind_cols(testCsv) %>% 
++   select(id,.pred_1) %>%
++   rename(Id= id, Action = .pred_1)
+> 
+> 
+> write_csv(Sub5, "knnSubmission.csv")
+> 
+> proc.time()
+   user  system elapsed 
+866.067  10.242 589.159 
