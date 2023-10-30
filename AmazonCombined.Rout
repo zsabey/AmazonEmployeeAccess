@@ -44,7 +44,7 @@ Type 'q()' to quit R.
 ✖ dplyr::lag()      masks stats::lag()
 ✖ yardstick::spec() masks readr::spec()
 ✖ recipes::step()   masks stats::step()
-• Learn how to get started at https://www.tidymodels.org/start/
+• Dig deeper into tidy modeling with R at https://www.tmwr.org
 > library(embed)
 > library(discrim)
 
@@ -190,11 +190,10 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 +                                precision, accuracy)) #Or leave metrics NULL
 → A | warning: While computing binary `precision()`, no predicted events were detected (i.e. `true_positive + false_positive = 0`). 
                Precision is undefined in this case, and `NA` will be returned.
-               Note that 635 true event(s) actually occured for the problematic event level, '0'.
+               Note that 613 true event(s) actually occured for the problematic event level, '0'.
 There were issues with some computations   A: x1
-→ B | warning: While computing binary `precision()`, no predicted events were detected (i.e. `true_positive + false_positive = 0`). 
-               Precision is undefined in this case, and `NA` will be returned.
-               Note that 630 true event(s) actually occured for the problematic event level, '0'.
+→ B | warning: Model failed to converge with max|grad| = 0.335824 (tol = 0.002, component 1), Model is nearly unidentifiable: very large eigenvalue
+                - Rescale variables?
 There were issues with some computations   A: x1There were issues with some computations   A: x1   B: x1
 There were issues with some computations   A: x1   B: x1
 
@@ -209,16 +208,16 @@ There were issues with some computations   A: x1   B: x1
 # A tibble: 700 × 8
          penalty mixture .metric   .estimator  mean     n std_err .config       
            <dbl>   <dbl> <chr>     <chr>      <dbl> <int>   <dbl> <chr>         
- 1 0.0000000001        0 accuracy  binary     0.904     3 0.00284 Preprocessor1…
- 2 0.0000000001        0 f_meas    binary     0.370     3 0.0191  Preprocessor1…
- 3 0.0000000001        0 precision binary     0.299     3 0.00567 Preprocessor1…
- 4 0.0000000001        0 recall    binary     0.489     3 0.0524  Preprocessor1…
- 5 0.0000000001        0 roc_auc   binary     0.829     3 0.0147  Preprocessor1…
- 6 0.0000000001        0 sens      binary     0.489     3 0.0524  Preprocessor1…
- 7 0.0000000001        0 spec      binary     0.930     3 0.00607 Preprocessor1…
- 8 0.00000000129       0 accuracy  binary     0.904     3 0.00284 Preprocessor1…
- 9 0.00000000129       0 f_meas    binary     0.370     3 0.0191  Preprocessor1…
-10 0.00000000129       0 precision binary     0.299     3 0.00567 Preprocessor1…
+ 1 0.0000000001        0 accuracy  binary     0.904     3 0.00110 Preprocessor1…
+ 2 0.0000000001        0 f_meas    binary     0.362     3 0.0175  Preprocessor1…
+ 3 0.0000000001        0 precision binary     0.293     3 0.00927 Preprocessor1…
+ 4 0.0000000001        0 recall    binary     0.474     3 0.0362  Preprocessor1…
+ 5 0.0000000001        0 roc_auc   binary     0.816     3 0.0111  Preprocessor1…
+ 6 0.0000000001        0 sens      binary     0.474     3 0.0362  Preprocessor1…
+ 7 0.0000000001        0 spec      binary     0.930     3 0.00265 Preprocessor1…
+ 8 0.00000000129       0 accuracy  binary     0.904     3 0.00110 Preprocessor1…
+ 9 0.00000000129       0 f_meas    binary     0.362     3 0.0175  Preprocessor1…
+10 0.00000000129       0 precision binary     0.293     3 0.00927 Preprocessor1…
 # ℹ 690 more rows
 > 
 > CV_results
@@ -227,13 +226,13 @@ There were issues with some computations   A: x1   B: x1
 # A tibble: 3 × 4
   splits                id    .metrics           .notes          
   <list>                <chr> <list>             <list>          
-1 <split [21846/10923]> Fold1 <tibble [700 × 6]> <tibble [1 × 3]>
+1 <split [21846/10923]> Fold1 <tibble [700 × 6]> <tibble [0 × 3]>
 2 <split [21846/10923]> Fold2 <tibble [700 × 6]> <tibble [1 × 3]>
-3 <split [21846/10923]> Fold3 <tibble [700 × 6]> <tibble [0 × 3]>
+3 <split [21846/10923]> Fold3 <tibble [700 × 6]> <tibble [1 × 3]>
 
 There were issues with some computations:
 
-  - Warning(s) x1: While computing binary `precision()`, no predicted events were de...
+  - Warning(s) x1: Model failed to converge with max|grad| = 0.335824 (tol = 0.002, ...
   - Warning(s) x1: While computing binary `precision()`, no predicted events were de...
 
 Run `show_notes(.Last.tune.result)` for more information.
@@ -244,7 +243,7 @@ Run `show_notes(.Last.tune.result)` for more information.
 # A tibble: 1 × 3
   penalty mixture .config               
     <dbl>   <dbl> <chr>                 
-1       1   0.111 Preprocessor1_Model020
+1       1       0 Preprocessor1_Model010
 > 
 > ## Finalize the Workflow & fit it
 > final_wf <- penalized_workflow %>%
@@ -344,7 +343,7 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 > ## Set up grid of tuning values
 > tuning_grid <- grid_regular(rbf_sigma(),
 +                             cost(),
-+                             levels = 5) ## L^2 total tuning possibilities
++                             levels = 3) ## L^2 total tuning possibilities
 > 
 > ## Set up K-fold CV
 > folds <- vfold_cv(trainCsv, v = 3, repeats=1)
@@ -355,3 +354,5 @@ dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
 +   tune_grid(resamples=folds,
 +             grid=tuning_grid,
 +             metrics=metric_set(roc_auc)) #Or leave metrics NULL
+→ A | error:   $ operator is invalid for atomic vectors
+There were issues with some computations   A: x1
