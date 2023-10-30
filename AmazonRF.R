@@ -27,7 +27,7 @@ baked
 
 #Set up the model
 my_mod <- rand_forest(mtry = tune(),
-                      min_n=tune(),
+                      min_n=25,
                       trees=500) %>%
 set_engine("ranger") %>%
 set_mode("classification")
@@ -37,10 +37,11 @@ rf_workflow <- workflow() %>%
   add_recipe(rf_recipe) %>%
   add_model(my_mod)
 
+
 ## Set up grid of tuning values
-tuning_grid <- grid_regular(mtry(range = c(1,4)),
-                            min_n(),
-                            levels = 10) ## L^2 total tuning possibilities
+
+#CV Results 1,23
+tuning_grid <- grid_regular(mtry(range = c(1,8))) ## L^2 total tuning possibilities
 
 ## Set up K-fold CV
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
