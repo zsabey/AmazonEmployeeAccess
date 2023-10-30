@@ -161,7 +161,7 @@ SVM_wf <- workflow() %>%
 ## Set up grid of tuning values
 tuning_grid <- grid_regular(rbf_sigma(),
                             cost(),
-                            levels = 5) ## L^2 total tuning possibilities
+                            levels = 3) ## L^2 total tuning possibilities
 
 ## Set up K-fold CV
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
@@ -243,7 +243,7 @@ rf_workflow <- workflow() %>%
 ## Set up grid of tuning values
 tuning_grid <- grid_regular(mtry(range = c(1,4)),
                             min_n(),
-                            levels = 10) ## L^2 total tuning possibilities
+                            levels = 5) ## L^2 total tuning possibilities
 
 ## Set up K-fold CV
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
@@ -326,7 +326,7 @@ nb_wf <- workflow() %>%
 ## Set up grid of tuning values
 tuning_grid <- grid_regular(Laplace(),
                             smoothness(),
-                            levels = 5) ## L^2 total tuning possibilities
+                            levels = 3) ## L^2 total tuning possibilities
 
 ## Set up K-fold CV
 folds <- vfold_cv(trainCsv, v = 3, repeats=1)
@@ -408,7 +408,7 @@ knn_wf <- workflow() %>%
 
 ## Set up grid of tuning values
 tuning_grid <- grid_regular(neighbors(),
-                            levels = 8) ## L^2 total tuning possibilities
+                            levels = 3) ## L^2 total tuning possibilities
 tuning_grid
 
 ## Set up K-fold CV

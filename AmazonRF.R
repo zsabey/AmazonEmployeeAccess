@@ -16,8 +16,8 @@ trainCsv <- trainCsv %>%
 rf_recipe <- recipe(ACTION ~ ., data=trainCsv) %>%
   step_mutate_at(all_numeric_predictors(), fn = factor) %>% # turn all numeric features into factors
   #step_other(all_nominal_predictors(), threshold = .001) %>% # combines categorical values that occur <5% into an "other" value
-  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) %>%
-  step_smote(all_outcomes(), neighbors=5)
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(ACTION)) #%>%
+  #step_smote(all_outcomes(), neighbors=5)
 
 prep <- prep(rf_recipe)
 baked <- bake(prep, new_data = NULL)
@@ -49,8 +49,7 @@ folds <- vfold_cv(trainCsv, v = 3, repeats=1)
 CV_results <- rf_workflow %>%
   tune_grid(resamples=folds,
             grid=tuning_grid,
-            metrics=metric_set(roc_auc, f_meas, sens, recall, spec,
-                               precision, accuracy)) #Or leave metrics NULL
+            metrics=metric_set(roc_auc)) #Or leave metrics NULL
 
 ## Find best tuning parameters
 collect_metrics(CV_results) %>% # Gathers metrics into DF
